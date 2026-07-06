@@ -64,11 +64,21 @@ const uploadToCloudinary = (
   });
 };
 
+const getPublicIdFromUrl = (url: string): string | null => {
+  const match = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/);
+  return match ? match[1] : null;
+};
+
 const removeFromCloudinary = (url: string) => {
   return new Promise((resolve, reject) => {
-    cloudinary.uploader.destroy(url, (error, result) => {
+    const publicId = getPublicIdFromUrl(url);
+    if (!publicId) {
+      return reject(new ApiError(500, "Invalid Cloudinary URL"));
+    }
+
+    cloudinary.uploader.destroy(publicId, (error, result) => {
       if (error || !result) {
-        console.error("Cloudinary upload error:", error);
+        console.error("Cloudinary remove error:", error);
         return reject(new ApiError(500, "Failed to remove image"));
       }
       resolve(result);
