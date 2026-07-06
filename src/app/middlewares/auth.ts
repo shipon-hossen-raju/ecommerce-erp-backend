@@ -3,10 +3,17 @@ import httpStatus from "http-status";
 import ApiError from "../../errors/ApiErrors";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
 import { JwtPayloadUser } from "../../interfaces/global.type";
-import { User } from "../modules/user/user.model";
 import { TUserRole } from "../modules/user/user.interface";
+import { User } from "../modules/user/user.model";
 
-const auth = (...allowedRoles: TUserRole[]) => {
+// const auth = (...allowedRoles: TUserRole[]) => {
+const auth = ({
+  roles = [],
+  isOptional = false,
+}: {
+  roles?: TUserRole[];
+  isOptional?: boolean;
+}) => {
   return async (
     req: Request & { user?: JwtPayloadUser },
     res: Response,
@@ -16,6 +23,10 @@ const auth = (...allowedRoles: TUserRole[]) => {
       const token = req.headers.authorization?.split(" ")[1];
 
       if (!token) {
+        throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
+      }
+
+      if (!token && !isOptional) {
         throw new ApiError(httpStatus.UNAUTHORIZED, "You are not authorized!");
       }
 
@@ -31,7 +42,7 @@ const auth = (...allowedRoles: TUserRole[]) => {
         );
       }
 
-      if (allowedRoles.length && !allowedRoles.includes(user.role)) {
+      if (roles.length && !roles.includes(user.role)) {
         throw new ApiError(
           httpStatus.FORBIDDEN,
           "You do not have permission to perform this action!",

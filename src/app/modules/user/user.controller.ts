@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import httpStatus from "http-status";
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
+import { checkMongodbID } from "../../../utils/checkMongodbId";
 import { userService } from "./user.service";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
@@ -27,7 +28,8 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getUserById = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.getUserById(req.params.id);
+  const userId = checkMongodbID(req.params.id);
+  const result = await userService.getUserById(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -38,7 +40,8 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 });
 
 const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.updateUser(req.params.id, req.body);
+  const userId = checkMongodbID(req.params.id);
+  const result = await userService.updateUser(userId, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -49,7 +52,8 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
 });
 
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
-  await userService.deleteUser(req.params.id);
+  const userId = checkMongodbID(req.params.id);
+  await userService.deleteUser(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

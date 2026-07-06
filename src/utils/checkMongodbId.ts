@@ -9,5 +9,11 @@ export const checkMongodbID = (id: string) => {
     throw new ApiError(httpStatus.BAD_REQUEST, "Id is required");
   }
 
-  return /^[0-9a-fA-F]{24}$/.test(id);
+  const result = /^[0-9a-fA-F]{24}$/.test(id);
+
+  if (!result) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Id is not valid");
+  }
+
+  return id;
 };

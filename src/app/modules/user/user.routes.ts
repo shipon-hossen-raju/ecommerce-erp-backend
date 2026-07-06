@@ -9,26 +9,34 @@ const router = express.Router();
 
 router.post(
   "/",
-  auth(USER_ROLE.ADMIN),
+  auth({ roles: [USER_ROLE.ADMIN] }),
   validateRequest({
     schema: UserValidation.createUserValidationSchema,
   }),
   userController.createUser,
 );
 
-router.get("/", auth(USER_ROLE.ADMIN), userController.getAllUsers);
+router.get("/", auth({ roles: [USER_ROLE.ADMIN] }), userController.getAllUsers);
 
-router.get("/:id", auth(USER_ROLE.ADMIN), userController.getUserById);
+router.get(
+  "/:id",
+  auth({ roles: [USER_ROLE.ADMIN] }),
+  userController.getUserById,
+);
 
 router.put(
   "/:id",
-  auth(USER_ROLE.ADMIN),
+  auth({ roles: [USER_ROLE.ADMIN] }),
   validateRequest({
     schema: UserValidation.updateUserValidationSchema,
   }),
   userController.updateUser,
 );
 
-router.delete("/:id", auth(USER_ROLE.ADMIN), userController.deleteUser);
+router.delete(
+  "/:id",
+  auth({ roles: [USER_ROLE.ADMIN] }),
+  userController.deleteUser,
+);
 
 export const userRoutes = router;

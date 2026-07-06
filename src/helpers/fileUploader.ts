@@ -64,7 +64,20 @@ const uploadToCloudinary = (
   });
 };
 
+const removeFromCloudinary = (url: string) => {
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader.destroy(url, (error, result) => {
+      if (error || !result) {
+        console.error("Cloudinary upload error:", error);
+        return reject(new ApiError(500, "Failed to remove image"));
+      }
+      resolve(result);
+    });
+  });
+};
+
 export const fileUploader = {
   uploadSingleImage,
   uploadToCloudinary,
+  removeFromCloudinary,
 };
