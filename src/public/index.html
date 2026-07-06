@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Server Status</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Syne:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #080c10;
+        --surface: #0d1117;
+        --surface2: #161b22;
+        --border: rgba(48, 54, 61, 0.9);
+        --accent: #00ffc3;
+        --accent2: #0ea5e9;
+        --text: #e6edf3;
+        --muted: #7d8590;
+        --danger: #f85149;
+        --warn: #d29922;
+        --mono: "JetBrains Mono", monospace;
+        --display: "Syne", sans-serif;
+      }
+
+      body {
+        font-family: var(--mono);
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+        background-image:
+          radial-gradient(
+            ellipse 80% 50% at 50% -20%,
+            rgba(0, 255, 195, 0.05),
+            transparent
+          ),
+          linear-gradient(180deg, #080c10 0%, #060a0d 100%);
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 680px;
+        animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 1.5rem;
+        padding: 0 2px;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+      .dot.r {
+        background: #ff5f57;
+      }
+      .dot.y {
+        background: #febc2e;
+      }
+      .dot.g {
+        background: #28c840;
+      }
+      .topbar-title {
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--muted);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .header {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.75rem 2rem;
+        background: var(--surface);
+        margin-bottom: 1rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(0, 255, 195, 0.04) 0%,
+          transparent 60%
+        );
+        pointer-events: none;
+      }
+      .project-name {
+        font-family: var(--display);
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1;
+        margin-bottom: 0.4rem;
+      }
+      .project-name span {
+        color: var(--accent);
+      }
+      .badge-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 0.75rem;
+      }
+      .badge {
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 20px;
+        border: 1px solid;
+        letter-spacing: 0.04em;
+      }
+      .badge.version {
+        border-color: rgba(0, 255, 195, 0.3);
+        color: var(--accent);
+      }
+      .badge.env {
+        border-color: rgba(14, 165, 233, 0.3);
+        color: var(--accent2);
+      }
+
+      .live-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 1rem;
+      }
+      .pulse-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: pulse 2s infinite;
+        flex-shrink: 0;
+      }
+      .pulse-dot.danger {
+        background: var(--danger);
+        animation: pulse-red 2s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 0 0 0 rgba(0, 255, 195, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 8px rgba(0, 255, 195, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(0, 255, 195, 0);
+        }
+      }
+      @keyframes pulse-red {
+        0% {
+          box-shadow: 0 0 0 0 rgba(248, 81, 73, 0.5);
+        }
+        70% {
+          box-shadow: 0 0 0 8px rgba(248, 81, 73, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(248, 81, 73, 0);
+        }
+      }
+      .live-text {
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+      @media (max-width: 500px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.1rem 1.25rem;
+        transition: border-color 0.2s;
+      }
+      .card:hover {
+        border-color: rgba(0, 255, 195, 0.2);
+      }
+      .card-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 0.4rem;
+      }
+      .card-value {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--text);
+        word-break: break-all;
+      }
+      .card-value.accent {
+        color: var(--accent);
+      }
+      .card-value.info {
+        color: var(--accent2);
+      }
+      .card-value.skeleton {
+        color: transparent;
+        background: var(--surface2);
+        border-radius: 4px;
+        animation: shimmer 1.4s ease-in-out infinite;
+        user-select: none;
+        min-width: 80px;
+        display: inline-block;
+      }
+      @keyframes shimmer {
+        0%,
+        100% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .mem-bar-bg {
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 2px;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+      .mem-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+        background: var(--accent);
+        transition:
+          width 0.8s ease,
+          background 0.4s ease;
+        width: 0%;
+      }
+      .mem-bar-fill.warn {
+        background: var(--warn);
+      }
+      .mem-bar-fill.danger {
+        background: var(--danger);
+      }
+
+      .card.wide {
+        grid-column: 1 / -1;
+      }
+
+      .footer-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .footer-left {
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.8;
+      }
+      .footer-left a {
+        color: var(--accent2);
+        text-decoration: none;
+      }
+      .footer-left a:hover {
+        text-decoration: underline;
+      }
+
+      .refresh-btn {
+        font-family: var(--mono);
+        font-size: 12px;
+        padding: 7px 20px;
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid rgba(0, 255, 195, 0.35);
+        border-radius: 6px;
+        cursor: pointer;
+        letter-spacing: 0.04em;
+        transition:
+          background 0.2s,
+          border-color 0.2s,
+          opacity 0.2s;
+        white-space: nowrap;
+      }
+      .refresh-btn:hover {
+        background: rgba(0, 255, 195, 0.07);
+        border-color: rgba(0, 255, 195, 0.55);
+      }
+      .refresh-btn:active {
+        transform: scale(0.97);
+      }
+      .refresh-btn:disabled {
+        opacity: 0.4;
+        pointer-events: none;
+      }
+
+      .error-banner {
+        display: none;
+        background: rgba(248, 81, 73, 0.08);
+        border: 1px solid rgba(248, 81, 73, 0.3);
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 12px;
+        color: var(--danger);
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      .error-banner.visible {
+        display: block;
+      }
+
+      .timestamp {
+        text-align: center;
+        font-size: 11px;
+        color: var(--muted);
+        margin-top: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="topbar">
+        <div class="dot r"></div>
+        <div class="dot y"></div>
+        <div class="dot g"></div>
+        <span class="topbar-title">server · status</span>
+      </div>
+
+      <div class="header">
+        <div class="project-name"><span id="projectName">Loading…</span></div>
+        <div class="badge-row">
+          <span class="badge version">v1.0.0</span>
+          <span class="badge env" id="envBadge">—</span>
+        </div>
+        <div class="live-row">
+          <div class="pulse-dot" id="pulseDot"></div>
+          <span class="live-text" id="liveText">Connecting…</span>
+        </div>
+      </div>
+
+      <div class="error-banner" id="errorBanner">
+        ⚠ Could not reach the server. Retrying in 15s…
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">System</div>
+          <div class="card-value skeleton" id="system">Online</div>
+        </div>
+        <div class="card">
+          <div class="card-label">API</div>
+          <div class="card-value skeleton" id="api">Running</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Uptime</div>
+          <div class="card-value accent skeleton" id="uptime">0h 0m</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Server IP</div>
+          <div class="card-value info skeleton" id="ip">0.0.0.0</div>
+        </div>
+        <div class="card wide">
+          <div class="card-label">Memory Usage</div>
+          <div class="card-value skeleton" id="memory">0 GB / 0 GB</div>
+          <div class="mem-bar-bg">
+            <div class="mem-bar-fill" id="memBar"></div>
+          </div>
+        </div>
+        <div class="card wide">
+          <div class="card-label">Website</div>
+          <div class="card-value info skeleton" id="website_url">https://…</div>
+        </div>
+      </div>
+
+      <div class="footer-card">
+        <div class="footer-left">
+          Developed by
+          <strong
+            ><a href="https://developershipon.vercel.app" target="_blank"
+              >Shipon Hossen Raju</a
+            ></strong
+          ><br />
+          © 2026 All Rights Reserved
+        </div>
+        <button class="refresh-btn" id="refreshBtn" onclick="triggerRefresh()">
+          ↻ Refresh
+        </button>
+      </div>
+
+      <div class="timestamp" id="timestamp"></div>
+    </div>
+
+    <script>
+      function removeSkeleton() {
+        document
+          .querySelectorAll(".card-value.skeleton")
+          .forEach((el) => el.classList.remove("skeleton"));
+      }
+
+      async function loadStatus() {
+        try {
+          const res = await fetch("/health_check");
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const d = await res.json();
+
+          document.getElementById("projectName").textContent =
+            d.projectName || "My Server";
+          document.getElementById("envBadge").textContent =
+            d.environment || "—";
+          document.getElementById("system").textContent = d.system || "—";
+          document.getElementById("api").textContent = d.api || "—";
+          document.getElementById("uptime").textContent = d.uptime || "—";
+          document.getElementById("ip").textContent = d.ip || "—";
+          document.getElementById("website_url").textContent =
+            d.website_url || "—";
+          document.getElementById("memory").textContent = d.memory || "—";
+
+          const isUp = d.system === "Online";
+          const dot = document.getElementById("pulseDot");
+          dot.className = "pulse-dot" + (isUp ? "" : " danger");
+          document.getElementById("liveText").textContent = isUp
+            ? "All systems operational · auto-refresh 15s"
+            : "System degraded — check logs";
+
+          if (d.memPercent != null) {
+            const bar = document.getElementById("memBar");
+            bar.style.width = d.memPercent + "%";
+            bar.className =
+              "mem-bar-fill" +
+              (d.memPercent > 85
+                ? " danger"
+                : d.memPercent > 65
+                  ? " warn"
+                  : "");
+          }
+
+          document.getElementById("errorBanner").classList.remove("visible");
+          removeSkeleton();
+          document.getElementById("timestamp").textContent =
+            "Last updated: " + new Date().toLocaleTimeString();
+        } catch (err) {
+          document.getElementById("errorBanner").classList.add("visible");
+          document.getElementById("pulseDot").className = "pulse-dot danger";
+          document.getElementById("liveText").textContent =
+            "Connection failed · retrying…";
+        }
+      }
+
+      function triggerRefresh() {
+        const btn = document.getElementById("refreshBtn");
+        btn.textContent = "↻ Refreshing…";
+        btn.disabled = true;
+        loadStatus().finally(() => {
+          btn.textContent = "↻ Refresh";
+          btn.disabled = false;
+        });
+      }
+
+      loadStatus();
+      setInterval(loadStatus, 15000);
+    </script>
+  </body>
+</html>
