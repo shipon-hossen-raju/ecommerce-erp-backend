@@ -5,10 +5,6 @@ import { dashboardController } from "./dashboard.controller";
 
 const router = express.Router();
 
-router.get(
-  "/",
-  auth({ roles: ROLES_VIEW_DASHBOARD }),
-  dashboardController.getStats,
-);
+router.get("/", auth({}), dashboardController.getStats);
 
 export const dashboardRoutes = router;

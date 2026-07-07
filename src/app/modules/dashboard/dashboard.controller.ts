@@ -5,7 +5,7 @@ import sendResponse from "../../../shared/sendResponse";
 import { dashboardService } from "./dashboard.service";
 
 const getStats = catchAsync(async (req: Request, res: Response) => {
-  const result = await dashboardService.getStats();
+  const result = await dashboardService.getStats(req.user.role, req.user.id);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
