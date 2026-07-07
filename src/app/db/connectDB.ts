@@ -18,13 +18,17 @@ const seedSuperAdmin = async () => {
 };
 
 export const connectDB = async () => {
+  if (mongoose.connection.readyState >= 1) return mongoose.connection;
+
   try {
     await mongoose.connect(config.mongodbUri);
     console.log("✅ MongoDB connected successfully!");
 
     await seedSuperAdmin();
+    return mongoose.connection;
   } catch (error) {
     console.error("❌ MongoDB connection failed:", error);
-    process.exit(1);
+    if (!process.env.VERCEL) process.exit(1);
+    throw error;
   }
 };
