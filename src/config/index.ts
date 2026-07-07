@@ -47,7 +47,11 @@ console.log(
   `${isDev ? "development 🛠️ " : "production 🚀 "} mode.`,
 );
 
-const corsOrigin = [env.FRONTEND_URL, "http://localhost:5173"];
+const corsOrigin = [
+  env.FRONTEND_URL,
+  "http://localhost:5173",
+  "https://ecommerce-erp-frontend.vercel.app",
+];
 
 export default {
   env: env.NODE_ENV,
