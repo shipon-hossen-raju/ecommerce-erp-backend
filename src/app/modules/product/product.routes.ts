@@ -15,6 +15,12 @@ router.get(
 );
 
 router.get(
+  "/categories",
+  auth({ roles: ROLES_VIEW_PRODUCTS }),
+  productController.getProductCategories,
+);
+
+router.get(
   "/:id",
   auth({ roles: ROLES_VIEW_PRODUCTS }),
   productController.getProductById,

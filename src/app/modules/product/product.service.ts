@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import ApiError from "../../../errors/ApiErrors";
 import { fileUploader } from "../../../helpers/fileUploader";
 import QueryBuilder from "../../builder/QueryBuilder";
-import { PRODUCT_SEARCHABLE_FIELDS } from "./product.constant";
+import { LOW_STOCK_THRESHOLD, PRODUCT_SEARCHABLE_FIELDS } from "./product.constant";
 import { IProduct } from "./product.interface";
 import { Product } from "./product.model";
 
@@ -30,17 +30,30 @@ const createProduct = async (
 };
 
 const getAllProducts = async (query: Record<string, unknown>) => {
-  const productQuery = new QueryBuilder(Product.find(), query)
+  const { lowStock, ...restQuery } = query;
+
+  const productQuery = new QueryBuilder(Product.find(), restQuery)
     .search(PRODUCT_SEARCHABLE_FIELDS)
     .filter()
     .sort()
     .paginate()
     .fields();
 
+  if (lowStock === "true") {
+    productQuery.modelQuery = productQuery.modelQuery.find({
+      stockQuantity: { $lt: LOW_STOCK_THRESHOLD },
+    });
+  }
+
   const data = await productQuery.execute();
   const meta = await productQuery.countTotal();
 
   return { data, meta };
+};
+
+const getProductCategories = async () => {
+  const categories = await Product.distinct("category");
+  return categories.filter(Boolean).sort();
 };
 
 const getProductById = async (id: string) => {
@@ -111,6 +124,7 @@ const deleteProduct = async (id: string) => {
 export const productService = {
   createProduct,
   getAllProducts,
+  getProductCategories,
   getProductById,
   updateProduct,
   deleteProduct,

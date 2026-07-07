@@ -15,6 +15,33 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getSalesTrend = catchAsync(async (req: Request, res: Response) => {
+  const days = Number(req.query.days) || 30;
+  const result = await dashboardService.getSalesTrend(days);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Sales trend retrieved successfully",
+    data: result,
+  });
+});
+
+const getTopProducts = catchAsync(async (req: Request, res: Response) => {
+  const days = Number(req.query.days) || 30;
+  const limit = Number(req.query.limit) || 5;
+  const result = await dashboardService.getTopProducts(days, limit);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Top products retrieved successfully",
+    data: result,
+  });
+});
+
 export const dashboardController = {
   getStats,
+  getSalesTrend,
+  getTopProducts,
 };

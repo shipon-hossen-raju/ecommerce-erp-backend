@@ -6,5 +6,15 @@ import { dashboardController } from "./dashboard.controller";
 const router = express.Router();
 
 router.get("/", auth({}), dashboardController.getStats);
+router.get(
+  "/sales-trend",
+  auth({ roles: ["ADMIN", "MANAGER"] }),
+  dashboardController.getSalesTrend,
+);
+router.get(
+  "/top-products",
+  auth({ roles: ["ADMIN", "MANAGER"] }),
+  dashboardController.getTopProducts,
+);
 
 export const dashboardRoutes = router;
