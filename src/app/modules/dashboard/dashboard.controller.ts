@@ -4,6 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { dashboardService } from "./dashboard.service";
 
+// GET /dashboard/stats - role-based summary stats
 const getStats = catchAsync(async (req: Request, res: Response) => {
   const result = await dashboardService.getStats(req.user.role, req.user.id);
 
@@ -15,6 +16,7 @@ const getStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /dashboard/sales-trend - daily sales trend, default last 30 days
 const getSalesTrend = catchAsync(async (req: Request, res: Response) => {
   const days = Number(req.query.days) || 30;
   const result = await dashboardService.getSalesTrend(days);
@@ -27,6 +29,7 @@ const getSalesTrend = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /dashboard/top-products - best-selling products, default last 30 days top 5
 const getTopProducts = catchAsync(async (req: Request, res: Response) => {
   const days = Number(req.query.days) || 30;
   const limit = Number(req.query.limit) || 5;

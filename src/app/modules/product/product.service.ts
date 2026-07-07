@@ -11,6 +11,7 @@ type TCreateProductPayload = Omit<
   "_id" | "image" | "createdAt" | "updatedAt"
 >;
 
+// Create a product with a unique SKU and upload its image to Cloudinary
 const createProduct = async (
   payload: TCreateProductPayload,
   file: Express.Multer.File,
@@ -29,6 +30,7 @@ const createProduct = async (
   return Product.create({ ...payload, image });
 };
 
+// List products with search/filter/sort/pagination and optional low-stock filter
 const getAllProducts = async (query: Record<string, unknown>) => {
   const { lowStock, ...restQuery } = query;
 
@@ -51,11 +53,13 @@ const getAllProducts = async (query: Record<string, unknown>) => {
   return { data, meta };
 };
 
+// Get distinct, sorted list of product categories
 const getProductCategories = async () => {
   const categories = await Product.distinct("category");
   return categories.filter(Boolean).sort();
 };
 
+// Fetch a single product by id
 const getProductById = async (id: string) => {
   const product = await Product.findById(id);
   if (!product) {
@@ -66,6 +70,7 @@ const getProductById = async (id: string) => {
 
 type TUpdateProductPayload = Partial<TCreateProductPayload>;
 
+// Update a product; replaces the image on Cloudinary if a new file is given
 const updateProduct = async (
   id: string,
   payload: TUpdateProductPayload,
@@ -101,6 +106,7 @@ const updateProduct = async (
   return product;
 };
 
+// Delete a product and remove its image from Cloudinary
 const deleteProduct = async (id: string) => {
   const findProduct = await Product.findById(id);
 

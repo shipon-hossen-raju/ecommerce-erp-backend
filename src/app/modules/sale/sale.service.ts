@@ -8,6 +8,7 @@ import { checkMongodbID } from "../../../utils/checkMongodbId";
 
 type TSaleItemInput = { product: string; quantity: number };
 
+// Create a sale in a transaction: deduct stock atomically per item, then record the sale
 const createSale = async ({
   items,
   soldBy,
@@ -21,6 +22,7 @@ const createSale = async ({
     const sale = await session.withTransaction(async () => {
       const saleItems: ISaleItem[] = [];
 
+      // update stock
       for (const item of items) {
         const productId = checkMongodbID(item.product);
         const updatedProduct = await Product.findOneAndUpdate(
@@ -56,15 +58,18 @@ const createSale = async ({
         });
       }
 
+      // calculate grand total
       const grandTotal = saleItems.reduce(
         (sum, item) => sum + item.subtotal,
         0,
       );
 
+      // create sale
       const [createdSale] = await Sale.create(
         [{ items: saleItems, grandTotal, soldBy }],
         { session },
       );
+
       return createdSale;
     });
 
@@ -74,6 +79,7 @@ const createSale = async ({
   }
 };
 
+// List all sales with seller info populated, newest first
 const getAllSales = async () => {
   return Sale.find().populate("soldBy", "name email role").sort("-createdAt");
 };

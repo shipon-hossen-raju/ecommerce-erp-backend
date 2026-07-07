@@ -4,6 +4,7 @@ import { createToken } from "../../../helpers/jwtHelpers";
 import { User } from "../user/user.model";
 import { TLoginPayload } from "./auth.interface";
 
+// Verify email/password and issue a JWT access token
 const loginUser = async (payload: TLoginPayload) => {
   const user = await User.findOne({ email: payload.email }).select("+password");
 
@@ -40,6 +41,7 @@ const loginUser = async (payload: TLoginPayload) => {
   };
 };
 
+// Fetch the logged-in user's own profile
 const getMyProfile = async (userId: string) => {
   const user = await User.findById(userId);
 

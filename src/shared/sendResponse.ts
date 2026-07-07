@@ -1,5 +1,6 @@
 import { Response } from "express"
 
+// Send a consistent JSON response shape across all endpoints
 const sendResponse = <T>(res: Response, jsonData: {
     statusCode: number,
     success: boolean,

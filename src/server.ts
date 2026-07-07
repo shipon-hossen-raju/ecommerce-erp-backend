@@ -6,6 +6,7 @@ import { getLocalIP } from "./utils/getLocalIp";
 
 let server: Server;
 
+// Connect to the database, then start the HTTP server
 async function startServer() {
   await connectDB();
 
@@ -23,9 +24,11 @@ async function startServer() {
   });
 }
 
+// Start the app and register graceful-shutdown/crash handlers
 async function main() {
   await startServer();
 
+  // Close the server before exiting on fatal errors
   const exitHandler = () => {
     if (server) {
       server.close(() => {

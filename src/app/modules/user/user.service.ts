@@ -10,6 +10,7 @@ type TCreateUserPayload = {
   role: TUserRole;
 };
 
+// Create a new user, rejecting duplicate emails
 const createUser = async (payload: TCreateUserPayload) => {
   const existingUser = await User.findOne({ email: payload.email });
   if (existingUser) {
@@ -30,10 +31,12 @@ const createUser = async (payload: TCreateUserPayload) => {
   };
 };
 
+// List all users (password excluded), newest first
 const getAllUsers = async () => {
   return User.find().select("-password").sort("-createdAt");
 };
 
+// Fetch a single user by id
 const getUserById = async (id: string) => {
   const user = await User.findById(id).select("-password");
   if (!user) {
@@ -48,6 +51,7 @@ type TUpdateUserPayload = Partial<{
   role: TUserRole;
 }>;
 
+// Update editable fields (name/role/password) for a user
 const updateUser = async (id: string, payload: TUpdateUserPayload) => {
   const user = await User.findById(id);
   if (!user) {
@@ -69,6 +73,7 @@ const updateUser = async (id: string, payload: TUpdateUserPayload) => {
   };
 };
 
+// Permanently remove a user by id
 const deleteUser = async (id: string) => {
   const user = await User.findByIdAndDelete(id);
   if (!user) {

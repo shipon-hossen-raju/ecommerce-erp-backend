@@ -6,6 +6,7 @@ import sendResponse from "../../../shared/sendResponse";
 import { checkMongodbID } from "../../../utils/checkMongodbId";
 import { productService } from "./product.service";
 
+// POST /products - create a product (requires image file)
 const createProduct = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
 
@@ -23,6 +24,7 @@ const createProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /products - list products with query filters
 const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   const { data, meta } = await productService.getAllProducts(req.query);
 
@@ -35,6 +37,7 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /products/categories - list distinct product categories
 const getProductCategories = catchAsync(async (req: Request, res: Response) => {
   const result = await productService.getProductCategories();
 
@@ -46,6 +49,7 @@ const getProductCategories = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /products/:id - fetch a single product
 const getProductById = catchAsync(async (req: Request, res: Response) => {
   const result = await productService.getProductById(req.params.id);
 
@@ -57,10 +61,10 @@ const getProductById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// PATCH /products/:id - update a product, optionally replacing its image
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
   const file = req.file;
   const productId = checkMongodbID(req.params.id);
-  console.log("updateProduct productId ", productId);
 
   const result = await productService.updateProduct(productId, req.body, file);
 
@@ -72,6 +76,7 @@ const updateProduct = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// DELETE /products/:id - remove a product
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
   const productId = checkMongodbID(req.params.id);
   await productService.deleteProduct(productId);

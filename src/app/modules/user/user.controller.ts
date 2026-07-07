@@ -5,6 +5,7 @@ import sendResponse from "../../../shared/sendResponse";
 import { checkMongodbID } from "../../../utils/checkMongodbId";
 import { userService } from "./user.service";
 
+// POST /users - create a new user
 const createUser = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.createUser(req.body);
 
@@ -16,6 +17,7 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /users - list all users
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.getAllUsers();
 
@@ -27,6 +29,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /users/:id - fetch a single user
 const getUserById = catchAsync(async (req: Request, res: Response) => {
   const userId = checkMongodbID(req.params.id);
   const result = await userService.getUserById(userId);
@@ -39,6 +42,7 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// PATCH /users/:id - update a user
 const updateUser = catchAsync(async (req: Request, res: Response) => {
   const userId = checkMongodbID(req.params.id);
   const result = await userService.updateUser(userId, req.body);
@@ -51,6 +55,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// DELETE /users/:id - remove a user
 const deleteUser = catchAsync(async (req: Request, res: Response) => {
   const userId = checkMongodbID(req.params.id);
   await userService.deleteUser(userId);

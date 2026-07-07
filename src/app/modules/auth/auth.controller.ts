@@ -4,6 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { AuthServices } from "./auth.service";
 
+// POST /auth/login - authenticate user and return token
 const loginUser = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.loginUser(req.body);
 
@@ -15,6 +16,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+// GET /auth/me - return current authenticated user's profile
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
   const result = await AuthServices.getMyProfile(req.user.id);
 

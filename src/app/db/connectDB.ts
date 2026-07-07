@@ -3,6 +3,7 @@ import config from "../../config";
 import { USER_ROLE } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 
+// Create the default super admin account if it doesn't already exist
 const seedSuperAdmin = async () => {
   const existingAdmin = await User.findOne({ email: config.superAdmin.email });
   if (existingAdmin) return;
@@ -17,6 +18,7 @@ const seedSuperAdmin = async () => {
   console.log(`✅ Super admin seeded: ${config.superAdmin.email}`);
 };
 
+// Connect to MongoDB and seed the super admin on startup
 export const connectDB = async () => {
   if (mongoose.connection.readyState >= 1) return mongoose.connection;
 

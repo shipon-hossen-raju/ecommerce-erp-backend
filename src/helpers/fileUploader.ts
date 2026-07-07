@@ -44,6 +44,7 @@ const upload = multer({
 
 const uploadSingleImage = upload.single("image");
 
+// Stream an uploaded file buffer to Cloudinary and return the upload result
 const uploadToCloudinary = (
   file: Express.Multer.File,
   folder = "mini-erp/products",
@@ -69,6 +70,7 @@ const getPublicIdFromUrl = (url: string): string | null => {
   return match ? match[1] : null;
 };
 
+// Delete an image from Cloudinary by its stored URL
 const removeFromCloudinary = (url: string) => {
   return new Promise((resolve, reject) => {
     const publicId = getPublicIdFromUrl(url);

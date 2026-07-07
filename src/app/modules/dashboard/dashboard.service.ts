@@ -5,6 +5,7 @@ import { Sale } from "../sale/sale.model";
 import { TUserRole } from "../user/user.interface";
 import { User } from "../user/user.model";
 
+// Role-based stats: employees see their own sales, admins/managers see org-wide stats
 const getStats = async (role: TUserRole, userId: string) => {
   const isEmployee = role === "EMPLOYEE";
   const isAdmin = role === "ADMIN";
@@ -43,6 +44,7 @@ const getStats = async (role: TUserRole, userId: string) => {
   };
 };
 
+// Daily sales totals for the last N days, filling in zero for days with no sales
 const getSalesTrend = async (days: number) => {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -79,6 +81,7 @@ const getSalesTrend = async (days: number) => {
   return result;
 };
 
+// Best-selling products (by quantity) within the last N days
 const getTopProducts = async (days: number, limit: number) => {
   const start = new Date();
   start.setHours(0, 0, 0, 0);

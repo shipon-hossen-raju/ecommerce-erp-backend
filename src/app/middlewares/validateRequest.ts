@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { AnyZodObject } from "zod";
 import { log } from "../../utils/log";
 
+// Validate req.body (or parsed form-data field) against a Zod schema before the controller runs
 const validateRequest = ({
   schema,
   dataType = "row",

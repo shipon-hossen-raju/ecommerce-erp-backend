@@ -2,6 +2,7 @@ import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import config from "../config";
 import { TUserRole } from "../app/modules/user/user.interface";
 
+// Sign a JWT with the given payload and expiry
 const generateToken = (payload: any, secret: Secret, expiresIn: string) => {
   const token = jwt.sign(payload, secret, {
     algorithm: "HS256",
@@ -11,6 +12,7 @@ const generateToken = (payload: any, secret: Secret, expiresIn: string) => {
   return token;
 };
 
+// Verify and decode a JWT
 const verifyToken = (token: string) => {
   const secretKey = config.jwt.jwt_secret;
   return jwt.verify(token, secretKey!) as JwtPayload;
@@ -21,6 +23,7 @@ export const jwtHelpers = {
   verifyToken,
 };
 
+// Build the access token issued on login
 export function createToken({
   payload,
 }: {

@@ -6,7 +6,7 @@ import { JwtPayloadUser } from "../../interfaces/global.type";
 import { TUserRole } from "../modules/user/user.interface";
 import { User } from "../modules/user/user.model";
 
-// const auth = (...allowedRoles: TUserRole[]) => {
+// Verify JWT, attach the user to the request, and enforce allowed roles
 const auth = ({
   roles = [],
   isOptional = false,

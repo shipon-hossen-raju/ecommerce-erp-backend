@@ -11,6 +11,7 @@ type TZodErrorResponse = {
   errorSources: TErrorSource[];
 };
 
+// Convert a Zod validation error into a standard API error response
 const handleZodError = (err: ZodError): TZodErrorResponse => {
   const errorSources: TErrorSource[] = err.issues.map((issue: ZodIssue) => ({
     path: issue.path.join("."),

@@ -8,6 +8,7 @@ import config from "../../config";
 
 type TErrorSource = { path: string; message: string } | string;
 
+// Central error handler: normalizes Zod/Mongoose/ApiError errors into a consistent response
 const GlobalErrorHandler = (
   err: any,
   req: Request,

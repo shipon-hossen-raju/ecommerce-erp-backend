@@ -31,12 +31,14 @@ const userSchema = new Schema<IUser, UserModel>(
   { timestamps: true },
 );
 
+// Hash password before saving if it was changed
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, config.bcrypt_salt_rounds);
   next();
 });
 
+// Compare a plain password against the stored hash
 userSchema.static(
   "isPasswordMatched",
   async function (plainPassword: string, hashedPassword: string) {
